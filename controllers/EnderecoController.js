@@ -49,7 +49,7 @@ exports.createEnderecoViacep = async (req, res) => {
         res.status(201).json(novoCep);
     } catch(error) {
         console.error('Erro ao salvar no banco de dados: ', error)
-        res.status(500).send('Erro ao salvar no banco');    
+        res.status(500).send('Erro ao salvar no bd');    
     }
 
 }
