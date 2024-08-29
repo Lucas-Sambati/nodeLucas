@@ -1,4 +1,5 @@
 const { Endereco } = require('../models');
+const axios = require('axios')
 
 // criacao de um novo endereco
 exports.createEndereco = async (req, res) => {
@@ -20,6 +21,38 @@ exports.createEndereco = async (req, res) => {
         res.status(500).json({ error: 'Erro ao criar endereco', details: error.message });
     }
 };
+
+//cadastrar viacep no bd
+exports.createEnderecoViacep = async (req, res) => {
+    const cep = req.params.cep; //Obtém o CEP da URL
+
+    try{
+        const response = await axios.get(`https://viacep.com.br/ws/${cep}/json/`) //faz a requisicao para a api viacep
+
+        if (response.data.erro) {
+            // Trata o caso em que o CEP não é encontrado
+            return res.status(404).send('CEP não encontrado');
+        }
+
+        const { logradouro, complemento, bairro, localidade, uf, ibge } = response.data;
+
+        const novoCep = await Endereco.create({ // criando novo endereço com os dados da resposta
+            Cep : cep,
+            Logradouro : logradouro,
+            Numero : complemento,
+            Complemento : complemento,
+            Bairro : bairro,               
+            Cidade : localidade,
+            Estado : uf,
+            MunicipioIBGE : ibge
+            });
+        res.status(201).json(novoCep);
+    } catch(error) {
+        console.error('Erro ao salvar no banco de dados: ', error)
+        res.status(500).send('Erro ao salvar no banco');    
+    }
+
+}
 
 // leitura de todos os enderecos
 exports.getAllEnderecos = async (req, res) => {

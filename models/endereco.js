@@ -19,7 +19,6 @@ module.exports = (sequelize) => {
     },
     Numero: {
       type: DataTypes.INTEGER,
-      allowNull: false,
     },
     Complemento: {
       type: DataTypes.STRING,
